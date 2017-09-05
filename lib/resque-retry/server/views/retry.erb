@@ -7,7 +7,7 @@
 
 <p class="sub">
   Showing <%= start = params[:start].to_i %> to <%= start + 20 %> of
-  <b><%= size = resque.delayed_queue_schedule_size %></b> timestamps
+  <b><%= size = resque.retry_scheduler.delayed_queue_schedule_size %></b> timestamps
 </p>
 
 <table>
@@ -19,9 +19,9 @@
     <th>Args</th>
     <th>Retry Attempts</th>
   </tr>
-  <% timestamps = resque.delayed_queue_peek(start, start+20) %>
+  <% timestamps = resque.retry_scheduler.delayed_queue_peek(start, start+20) %>
   <% timestamps.each do |timestamp| %>
-    <% job = resque.delayed_timestamp_peek(timestamp, 0, 1).first %>
+    <% job = resque.retry_scheduler.delayed_timestamp_peek(timestamp, 0, 1).first %>
     <% next unless job %>
     <tr>
       <td>
@@ -34,7 +34,7 @@
         </form>
       </td>
       <td><a href="<%= u "retry/#{timestamp}" %>"><%= format_time(Time.at(timestamp)) %></a></td>
-      <td><%= delayed_timestamp_size = resque.delayed_timestamp_size(timestamp) %></td>
+      <td><%= delayed_timestamp_size = resque.retry_scheduler.delayed_timestamp_size(timestamp) %></td>
       <% if job && delayed_timestamp_size == 1 %>
         <td><%= h job['class'] %></td>
         <td><%= h job['args'].inspect %></td>

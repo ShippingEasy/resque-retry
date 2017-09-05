@@ -16,7 +16,7 @@ class ServerHelpersTest < Minitest::Test
     perform_next_job(@worker)
 
     timestamp = Resque.delayed_queue_peek(0, 1).first
-    job = Resque.delayed_timestamp_peek(timestamp, 0, 1).first
+    job = Resque.retry_scheduler.delayed_timestamp_peek(timestamp, 0, 1).first
     assert_equal '0', @helpers.retry_attempts_for_job(job), 'should have 0 retry attempt'
   end
 end
