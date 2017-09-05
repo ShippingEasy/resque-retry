@@ -1,6 +1,5 @@
 require 'cgi'
 require 'resque/server'
-require 'resque/scheduler/server'
 
 # Extend Resque::Server to add tabs.
 module ResqueRetry

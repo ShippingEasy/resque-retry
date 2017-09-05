@@ -30,8 +30,10 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
 
   s.add_dependency('resque', '~> 1.25')
-  s.add_dependency('resque-scheduler', '~> 4.0')
 
+  # resque-scheduler is required to use the default behavior, but it is
+  # not required in the gemspec, so that users can opt-out of it.
+  s.add_development_dependency('resque-scheduler', '~> 4.0')
   s.add_development_dependency('rake', '~> 10.3')
   s.add_development_dependency('minitest', '~> 5.5')
   s.add_development_dependency('rack-test', '~> 0.6')
