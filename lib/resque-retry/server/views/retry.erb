@@ -33,7 +33,7 @@
           <input type="submit" value="Queue now">
         </form>
       </td>
-      <td><a href="<%= u "retry/#{timestamp}" %>"><%= format_time(Time.at(timestamp)) %></a></td>
+      <td><a href="<%= u "retry/#{timestamp}" %>"><%= format_retry_time(Time.at(timestamp)) %></a></td>
       <td><%= delayed_timestamp_size = resque.retry_scheduler.delayed_timestamp_size(timestamp) %></td>
       <% if job && delayed_timestamp_size == 1 %>
         <td><%= h job['class'] %></td>

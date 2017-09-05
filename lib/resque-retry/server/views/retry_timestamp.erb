@@ -1,7 +1,7 @@
 <% timestamp = params[:timestamp].to_i %>
 
 <h1>
-  Delayed Jobs scheduled for <%= format_time(Time.at(timestamp)) %>
+  Delayed Jobs scheduled for <%= format_retry_time(Time.at(timestamp)) %>
   (with Retry Information)
 </h1>
 

@@ -70,6 +70,10 @@ module ResqueRetry
         Resque.redis.del(retry_key)
       end
 
+      def format_retry_time(t)
+        t.strftime('%Y-%m-%d %H:%M:%S %z')
+      end
+
       private
       def get_class(job)
         Resque::Job.new(nil, nil).constantize(job['class'])
