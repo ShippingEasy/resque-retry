@@ -26,7 +26,7 @@ class ExponentialBackoffTest < Minitest::Test
     assert_equal 2, Resque.info[:failed],     'should of failed again, this is the first retry attempt'
     assert_equal 0, Resque.info[:pending],    '0 pending jobs, it should be in the delayed queue'
 
-    delayed = Resque.delayed_queue_peek(0, 1)
+    delayed = Resque.retry_scheduler.delayed_queue_peek(0, 1)
     assert_in_delta (start_time + 60), delayed[0], 1.00, '2nd delay' # the first had a zero delay.
 
     5.times do
@@ -34,7 +34,7 @@ class ExponentialBackoffTest < Minitest::Test
       perform_next_job @worker
     end
 
-    delayed = Resque.delayed_queue_peek(0, 5)
+    delayed = Resque.retry_scheduler.delayed_queue_peek(0, 5)
     assert_in_delta (start_time + 600),     delayed[1], 1.00, '3rd delay'
     assert_in_delta (start_time + 3600),    delayed[2], 1.00, '4th delay'
     assert_in_delta (start_time + 10_800),  delayed[3], 1.00, '5th delay'
@@ -83,7 +83,7 @@ class ExponentialBackoffTest < Minitest::Test
       assert_equal 2, Resque.info[:failed]
 
       # second delay
-      delayed = Resque.delayed_queue_peek(0, 1)
+      delayed = Resque.retry_scheduler.delayed_queue_peek(0, 1)
       assert_in_delta(
         start_time + 60 * multiplicand_min,
         delayed[0],
@@ -96,7 +96,7 @@ class ExponentialBackoffTest < Minitest::Test
       end
 
       # third through sixth delays
-      delayed = Resque.delayed_queue_peek(1, 5)
+      delayed = Resque.retry_scheduler.delayed_queue_peek(1, 5)
       [600, 3600, 10_800, 21_600].each_with_index do |delay, index|
         assert_in_delta(
           start_time + delay * multiplicand_min,
@@ -117,12 +117,12 @@ class ExponentialBackoffTest < Minitest::Test
       perform_next_job @worker
     end
 
-    delayed = Resque.delayed_queue_peek(0, 3)
+    delayed = Resque.retry_scheduler.delayed_queue_peek(0, 3)
     assert_in_delta (start_time + 10), delayed[0], 1.00, '1st delay'
     assert_in_delta (start_time + 20), delayed[1], 1.00, '2nd delay'
     assert_in_delta (start_time + 30), delayed[2], 1.00, '3rd delay'
 
-    assert_equal 2, Resque.delayed_timestamp_size(delayed[2]), '4th delay should share delay with 3rd'
+    assert_equal 2, Resque.retry_scheduler.delayed_timestamp_size(delayed[2]), '4th delay should share delay with 3rd'
 
     assert_equal 4, Resque.info[:processed],  'processed jobs'
     assert_equal 4, Resque.info[:failed],     'failed jobs'

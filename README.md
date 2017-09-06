@@ -1,7 +1,11 @@
 resque-retry
 ============
 
-A [Resque][resque] plugin. Requires Resque ~> 1.25 & [resque-scheduler][resque-scheduler] ~> 4.0.
+A [Resque][resque] plugin. Requires Resque ~> 1.25.
+You must also have [resque-scheduler][resque-scheduler] ~> 4.0, unless you
+implement you own `retry_scheduler`. The resque-scheudler gem is *not* a
+dependency, so you need to add it to your application manually if you do not
+already have it.
 
 This gem provides retry, delay and exponential backoff support for resque jobs.
 
@@ -582,6 +586,36 @@ Reminder: `@ignore_exceptions` should be a subset of `@retry_exceptions`.
 
 The inner-workings of the plugin are output to the Resque [Logger](https://github.com/resque/resque/wiki/Logging)
 when `Resque.logger.level` is set to `Logger::DEBUG`.
+
+
+Using without resque-scheduler
+------------------------------
+
+By default, resque-retry will schedule jobs to be retried using resque-scheduler.
+Follow these steps if you would like to use a different scheduling mechanism:
+
+### 1) Require 'resque-retry/custom_scheduler'
+
+The default `require "resque-retry"` will configure the resque-scheduler behavior.
+Instead, use:
+
+```
+# Gemfile
+
+gem "resque-retry", require: "resque-retry/custom_scheduler"
+```
+
+### 2) Provide your own retry_scheduler
+
+Create an object that implements the `retry_scheduler` interface (see
+`lib/resque/plugins/retry/retry_via_resque_scheduler.rb`).
+
+Set the `retry_scheduler` to your new object when your application starts:
+
+```
+Resque.retry_scheduler = MyCustomSchedulerLogic.new
+```
+
 
 Contributing/Pull Requests
 --------------------------

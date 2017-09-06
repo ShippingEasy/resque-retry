@@ -1,6 +1,5 @@
 require 'cgi'
 require 'resque/server'
-require 'resque/scheduler/server'
 
 # Extend Resque::Server to add tabs.
 module ResqueRetry
@@ -21,7 +20,7 @@ module ResqueRetry
         end
 
         post '/retry/:timestamp/remove' do
-          Resque.delayed_timestamp_peek(params[:timestamp], 0, 0).each do |job|
+          Resque.retry_scheduler.delayed_timestamp_peek(params[:timestamp], 0, 0).each do |job|
             cancel_retry(job)
           end
           redirect u('retry')
@@ -65,11 +64,14 @@ module ResqueRetry
 
       # cancels job retry
       def cancel_retry(job)
-        klass = get_class(job)
         retry_key = retry_key_for_job(job)
-        Resque.remove_delayed(klass, *job['args'])
+        Resque.retry_scheduler.remove_delayed(job)
         Resque.redis.del("failure-#{retry_key}")
         Resque.redis.del(retry_key)
+      end
+
+      def format_retry_time(t)
+        t.strftime('%Y-%m-%d %H:%M:%S %z')
       end
 
       private

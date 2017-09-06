@@ -1,8 +1,5 @@
-require 'resque'
+require 'resque-retry/custom_scheduler'
+
 require 'resque-scheduler'
-
-require 'resque/plugins/retry'
-require 'resque/plugins/exponential_backoff'
-require 'resque/failure/multiple_with_retry_suppression'
-
-require 'resque-retry/version.rb'
+require 'resque/plugins/retry/retry_via_resque_scheduler'
+Resque.retry_scheduler = Resque::Plugins::Retry::RetryViaResqueScheduler.new(Resque)

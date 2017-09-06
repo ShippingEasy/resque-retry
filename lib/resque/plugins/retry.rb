@@ -406,7 +406,7 @@ module Resque
           # If the delay is 0, no point passing it through the scheduler
           Resque.enqueue(retry_in_queue, *retry_args)
         else
-          Resque.enqueue_in(temp_retry_delay, retry_in_queue, *retry_args)
+          Resque.retry_scheduler.enqueue_in(temp_retry_delay, retry_in_queue, *retry_args)
         end
 
         # remove retry key from redis if we handed retry off to another queue.
