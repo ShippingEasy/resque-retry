@@ -1,4 +1,5 @@
 <h1>Delayed Jobs with Retry Information</h1>
+<% can_queue_now = defined?(Resque::Scheduler) %>
 
 <p class="intro">
   This list below contains the timestamps for scheduled delayed jobs with
@@ -28,10 +29,12 @@
         <form action="<%= u "retry/#{timestamp}/remove" %>" method="post">
           <input type="submit" value="Remove">
         </form>
+      <% if can_queue_now %>
         <form action="<%= u "/delayed/queue_now" %>" method="post">
           <input type="hidden" name="timestamp" value="<%= timestamp.to_i %>">
           <input type="submit" value="Queue now">
         </form>
+      <% end %>
       </td>
       <td><a href="<%= u "retry/#{timestamp}" %>"><%= format_retry_time(Time.at(timestamp)) %></a></td>
       <td><%= delayed_timestamp_size = resque.retry_scheduler.delayed_timestamp_size(timestamp) %></td>
